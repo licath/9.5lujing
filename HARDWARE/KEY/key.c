@@ -8,12 +8,12 @@
 
 u16 USART_RX_STA2 = 0; 
 //float PosX = 0, PosY;
-float PosX = 0, PosY;
+float PosX = 0,PosY,laser_L;
 s32 PosAngle;
 u16 laser_left=0,laser_right=0;
 s16 PosAngle_temp = 0;
 u16 Distance;
-u8 red,blue;
+u8 red,blue,Begin_Run;
 u8 tub_1,tub_2;	
 
 void button_init(void)
@@ -41,16 +41,15 @@ void button_init(void)
 //    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;         //IO口速度为50MHz
 //    GPIO_Init(GPIOC,&GPIO_InitStructure);                        //根据参数设定初始化GPIOE1
 
-//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;                // PC0端口配置
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;        // 上拉输入
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;         //IO口速度为50MHz
-//    GPIO_Init(GPIOC,&GPIO_InitStructure);                        //根据参数设定初始化GPIOE1
-		
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;				 //Key->pb5端口配置
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;              
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;        // 上拉输入
+    GPIO_Init(GPIOC,&GPIO_InitStructure);                        
+    
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; 		 //上拉电阻输入
-    GPIO_Init(GPIOC, &GPIO_InitStructure);					 //根据设定参数初始化GPIOB
+    GPIO_Init(GPIOC, &GPIO_InitStructure);					 
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;				 //LED0-->Pc13端口配置
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; 		 //上拉电阻输入
     GPIO_Init(GPIOC, &GPIO_InitStructure);			
 }
@@ -99,7 +98,6 @@ u8 USART_RX_BUF3[USART_REC_LEN_3];
 void MyusartInit5(u32 bound)
 {
 
-
     USART_InitTypeDef USART_InitStruct1; //��������1�ṹ�����
     GPIO_InitTypeDef GPIO_InitStruct1;   //����GPIO1�ṹ�����
     NVIC_InitTypeDef NVIC_InitStruct1;   //�����ж�1�ṹ�����
@@ -136,7 +134,8 @@ void MyusartInit5(u32 bound)
 }
 void USART2_IRQHandler(void)
 {
-    static uint8_t n = 0,rebuf_laser[8] = {0};
+    static uint8_t n = 0;
+    static  uint16_t rebuf_laser[8] = {0};
     if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
     {
         rebuf_laser[n] = USART_ReceiveData(USART2);
@@ -153,7 +152,10 @@ void USART2_IRQHandler(void)
 									laser_left=rebuf_laser[1];
 									laser_left<<8;
 									laser_left|=rebuf_laser[2];
-									laser_right=rebuf_laser[3];
+						
+						      laser_L=laser_left;
+						
+									Begin_Run=rebuf_laser[3];
 									laser_right<<8;
 									laser_right|=rebuf_laser[4];
 									tub_1=rebuf_laser[5];	
@@ -165,16 +167,25 @@ void USART2_IRQHandler(void)
 	}
 }
 
-u8 git_SideNumber1(void)
+u8 git_Begin_Run()
+{
+		return Begin_Run;
+}
+
+u8 git_SideNumber1()
 {
 		return tub_1;
 }
 
-u8 git_SideNumber2(void)
+u8 git_SideNumber2()
 {
 		return tub_2;
 }
 
+float Laser_Left()
+{
+    return laser_L;
+}
 //void UART5_IRQHandler(void)
 //{
 //    static uint8_t m = 0,rebuf_3[9] = {0};
@@ -243,13 +254,12 @@ void UART5_IRQHandler(void)
 }
 
 
-u16 Laser(u16 date)
-{
-    USART_SendData(USART2, date);
-    while (USART_GetFlagStatus(USART2, USART_FLAG_TC) != SET)
-        ;
-    return Distance;
-}
+//u16 Laser(u16 date)
+//{
+//    USART_SendData(USART2, date);
+//    while (USART_GetFlagStatus(USART2, USART_FLAG_TC) != SET);
+//    return Distance;
+//}
 
 
 float GetPosX()
@@ -258,7 +268,7 @@ float GetPosX()
 }
 float GetPosY()
 {
-    return PosY/100;
+    return (PosY/100);
 }
 
 float GetAngle(void)
@@ -278,7 +288,7 @@ void clear(void)
 
 void UART2_Send_Byte(u8 Data)
 {
-    USART_SendData(USART2,'d');
+    USART_SendData(USART2,Data);
     while( USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET );
 }
 

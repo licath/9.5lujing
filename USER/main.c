@@ -16,14 +16,14 @@
 
 #define PI (3.141593f)
 static float laser_distance;
-fp32 Px,Py;
+fp32 Px,Py,laser_l;
 float Pp;
 fp32 v;
-long i;
+long i1;
 int a;
 u8 SideNumber1,SideNumber2;       //保存车子计划靠的边数 
 u8 SideNumber;
-u8 flag_cir=0,over_run;                      //判断车子所转的车速
+u8 flag_cir=0,begin_run;                      //判断车子所转的车速
 int main(void)
 {
 	  u8 a=2;
@@ -47,12 +47,16 @@ int main(void)
     TIM3_Init(3000,36000-1);//1.5秒定时
     TIM4_Init(2000,72-1);
     delay_ms(3000);
-//		cycleCounterInit();
+		cycleCounterInit();
 	  clear();
     while(1)
    {
+		    begin_run=git_Begin_Run();
+		    laser_l=Laser_Left();
 		    SideNumber1=git_SideNumber1();
 		    SideNumber2=git_SideNumber2();
+//		    SideNumber1=1;
+//		    SideNumber2=1;
         Px=GetPosX();
         Py=GetPosY();
         Pp=GetAngle();
@@ -93,14 +97,7 @@ int main(void)
             LCD_ShowString(55,150,200,16,16," ");
             LCD_ShowxNum(60,150,Pp,6,16,0X80);
         }
-				
-				    LCD_ShowString(60,170,200,16,16,"sideNumber1=");
-            LCD_ShowString(55,190,200,16,16," ");
-            LCD_ShowxNum(60,190,SideNumber1,6,16,0X80);
-				
-				    LCD_ShowString(60,210,200,16,16,"sideNumber2=");
-            LCD_ShowString(55,230,200,16,16," ");
-            LCD_ShowxNum(60,230,SideNumber2,6,16,0X80);
+
 				
 				    LCD_ShowString(130,50,200,16,16,"flag_cir=");
             LCD_ShowString(130,70,200,16,16," ");
@@ -109,42 +106,59 @@ int main(void)
 				    LCD_ShowString(130,90,200,16,16,"flag=");
             LCD_ShowString(130,110,200,16,16," ");
             LCD_ShowxNum(130,110,flag,6,16,0X80);
+				
+			    	LCD_ShowString(130,130,200,16,16,"millis()=");
+            LCD_ShowString(130,150,200,16,16," ");
+            LCD_ShowxNum(130,150,millis(),6,16,0X80);
+				
+				    LCD_ShowString(130,170,200,16,16,"flag_cir");
+            LCD_ShowString(130,190,200,16,16," ");
+            LCD_ShowxNum(130,190,flag_cir,6,16,0X80);
 				if(flag_cir%2==0)
+				{
 					SideNumber=SideNumber1;
+				}
 				if(flag_cir%2==1)
+				{
 					SideNumber=SideNumber2;
+				}
 				if(flag==0)
 					{
 					clock_wise_close_LargeToSmall(SideNumber);  
+					if((GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==0)&&(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5)==0))
+						{
+							if(millis()-i1>100)
+							{
+							flag_cir++;
+							flag=1;
+							}
+						}
 					}
 				if(flag==1)
 					{
 //			     clear();
 					if(SideNumber==1)
+					{
 					 UART2_Send_Byte('a');
+					}
 					if(SideNumber==2)
+					{
 					 UART2_Send_Byte('b');
+					}
 					if(SideNumber==3)
+					{
 					 UART2_Send_Byte('c');
+					}
 					if(SideNumber==4)
+					{
 					 UART2_Send_Byte('d');
-					 Back_Side(SideNumber);
 					}
-				if((GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==0)&&(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5)==0))
-					{
-						LED0=!LED0;
-						LED1=!LED0;
-						if(flag==0)
+					Back_Side(SideNumber);
+					if(begin_run==9)
 						{
-						 flag_cir++;
+							flag=0;
+							i1=millis();
 						}
-						flag=1;
-					}
-				if((millis()-i)>5000)
-					{
-						flag=0;
-						a++;
-					}
+			  }
     }
-	 
-	}
+}

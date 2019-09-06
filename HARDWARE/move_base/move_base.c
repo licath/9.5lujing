@@ -334,28 +334,28 @@ float AnglePid(float valueSet,float valueNow)
  */
 
 //小动作
-void Back_Side(u8 SideNumber)
+ void Back_Side(u8 SideNumber)
 {
-	int speed,kp=50;
+//	int speed,kp=0;
 	if(SideNumber==1)
 	{
-		speed=-GetPosY()*kp;
-		back_Turn(0,speed);
+//		speed=-GetPosY()*kp;
+		back_Turn(0,-1000);
 	}
 	if(SideNumber==2)
 	{
-		speed=-(2200-GetPosX())*kp;
-		back_Turn(90,speed);
+//		speed=-(2200-GetPosX())*kp;
+		back_Turn(90,-1000);
 	}
 	if(SideNumber==3)
 	{
-		speed=-(4400-GetPosY())*kp;
-		back_Turn(180,speed);
+//		speed=-(4400-GetPosY())*kp;
+		back_Turn(180,-1000);
 	}
 	if(SideNumber==4)
 	{
-		speed=(-2200-GetPosX())*kp;
-		back_Turn(90,speed);
+//		speed=(-2200-GetPosX())*kp;
+		back_Turn(90,-1000);
 	}
 }
 void move_to_pos(float x,float y,float angle)
@@ -594,166 +594,158 @@ uint8_t straightLine(float A1,float B1,float C1,uint8_t dir,float setSpeed)
 //}
 void clock_wise_close_LargeToSmall(u8 SideNumber) 
 {
-	static u8 flag=1;    
+	static u8 flag_1=1,flag_2=1,flag_3=1,flag_4=1; 
+	
+		LCD_ShowString(60,170,200,16,16,"flag_1=");
+		LCD_ShowString(55,190,200,16,16," ");
+		LCD_ShowxNum(60,190,flag_1,6,16,0X80);
+
+		LCD_ShowString(60,210,200,16,16,"flag_2=");
+		LCD_ShowString(55,230,200,16,16," ");
+		LCD_ShowxNum(60,230,flag_2,6,16,0X80);
 /*靠在出发去区的边上*/
 	if(SideNumber==1)            //靠在出发边上；
 {
-		 if(flag==1)               //flag等于1，则行走小圆
-			{
-				closeRound(0,2200, 800,1,4000,1);//小圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step1");
-			if(GetPosX()>900&&GetPosX()<1000&&GetPosY()>0&&GetPosY()<2000)
-				{
-					flag=2;
-				}
-			}
-			if(flag==2)                               //flag等于2，则判断i
-			{
-				static u8 i=0;
-				if(i==0)                                //i为0，则走大圆
-				{
-				closeRound(0,2200,1700,1,3500,0);				//大圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step2");
-				}
-				if(i==1)                                //i为1，寻找x=0的直线
-				{
-//					LCD_ShowString(60,250,200,16,16,"Number1 step2_1");
-					straightLine(1,0,0,0,1500);
-					if((GetPosY()>1700&&GetPosY()<1800)&&(GetPosX()>-100&&GetPosX()<100))                                               /**********待调*******/
-					{
-						flag=3;           
-					}
-				}
-				  if(GetPosX()>1400&&GetPosX()<1500&&GetPosY()>0&&GetPosY()<2000)                    /**********待调*******/
-				{
-					i=1;
-				}
-			}
-			if(flag==3)             //flag为3，开始后退靠边，
-			{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step3");
-				back_Turn(0,-2000);
-			}
+			flag_2=1;
+			flag_3=1;
+			flag_4=1;
+	 if (flag_1 == 1)            //flag等于1，则行走小圆
+	{
+		closeRound(0, 2200, 800, 1, 4000, 1); //小圈
+		if (GetPosX() > 900 && GetPosX() < 1000 && GetPosY() > 0 && GetPosY() < 2000)
+		{
+			flag_1 = 2;
+		}
+	}
+	if (flag_1 == 2)                            //flag等于2则跑大圈
+	{
+		closeRound(0, 2200, 1700, 1, 3500, 0);  //大圈
+		if (GetPosX() > 1400 && GetPosX() < 1500 && GetPosY() > 0 && GetPosY() < 2000)    
+		{
+			flag_1 = 3;
+		}
+	}
+	if (flag_1 == 3)          //flag为3，开始后退靠边，
+	{
+		straightLine(1, 0, 0, 0, 2000);
+		if ((GetPosY() > 1600 && GetPosY() < 1800) && (GetPosX() > -150 && GetPosX() < 150))                    
+		{
+			flag_1 = 4;
+		}
+	}
+	if (flag_1 == 4)
+	{
+		back_Turn(0, -2000);
+	}
 }
 /*靠在出发区的右边上*/
 		if(SideNumber==2)            //靠在初发边的右边的边上；
 	{
-		 if(flag==1)               //flag等于1，则行走大圆
-			{
-				closeRound(0,2200,800,1,4000,0);				//小圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step1");
-				if(GetPosX()>900&&GetPosX()<1000&&GetPosY()>0&&GetPosY()<2000)
-				{
-					flag=2;
-				} 
-			}
-			if(flag==2)             //flag等于2，则判断i
-			{
-				static u8 i=0;
-				if(i==0)              //i为0，则走小圆
-				{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step2");
-				closeRound(0,2200,1700,1,3500,1);//小圈
-				}
-				if(i==1)              //i为1，寻找x=0的直线
-				{
-//					LCD_ShowString(60,250,200,16,16,"Number1 step2_1");
-					straightLine(0,1,-2200,1,1500);
-					if((GetPosX()>600&&GetPosX()<700)&&(GetPosY()>2200&&GetPosY()<2300))
-					{
-						flag=3;           
-					}
-				}
-				  if(GetPosX()>400&&GetPosX()<2400&&GetPosY()>3800&&GetPosY()<3900)
-				{
-					i=1;
-				}
-			}
-			if(flag==3)             //flag为3，开始后退靠边，
-			{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step3");
-				back_Turn(90,-2000);
-			}
+			flag_1=1;
+			flag_3=1;
+			flag_4=1;
+   if(flag_2==1)               //flag等于1，则行走大圆
+      {
+        closeRound(0,2200,800,1,4000,0);        //小圈
+//        LCD_ShowString(60,250,200,16,16,"Number1 step1");
+        if(GetPosX()>900&&GetPosX()<1000&&GetPosY()>0&&GetPosY()<2000)
+        {
+          flag_2=2;
+        } 
+      }
+   if(flag_2==2)             //flag等于2，则判断i
+      {
+        static u8 i=0;
+        closeRound(0,2200,1700,1,3500,1);//小圈
+         if(GetPosX()>400&&GetPosX()<2400&&GetPosY()>3800&&GetPosY()<3900)
+        {
+          flag_2=3;
+        }
+      }
+   if(flag_2==3)              //i为1，寻找x=0的直线
+        {
+          straightLine(0,1,-2200,1,1500);
+          if((GetPosX()>400&&GetPosX()<600)&&(GetPosY()>2200&&GetPosY()<2300))
+          {
+            flag_2=4;           
+          }
+        }
+   if(flag_2==4)             //flag为3，开始后退靠边，
+      {
+        back_Turn(90,-2000);
+      }
 	 }
+	
 /*靠在出发区的对面边上*/
-			if(SideNumber==3)            //靠在出发边的对面边上；
+if(SideNumber==3)            //靠在出发边的对面边上；
 	{
-		 if(flag==1)               //flag等于1，则行走小圆
+		flag_2=1;
+		flag_1=1;
+		flag_4=1;
+		if (flag_3 == 1)            //flag等于1，则行走小圆
+		{
+			closeRound(0, 2200, 800, 1, 4000, 1); //小圈
+			if (GetPosX() > 900 && GetPosX() < 1000 && GetPosY() > 0 && GetPosY() < 2000)
 			{
-				closeRound(0,2200, 800,1,4000,1);//小圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step1");
-			if(GetPosX()>900&&GetPosX()<1000&&GetPosY()>0&&GetPosY()<2000)
-				{
-					flag=2;
-				}
+				flag_3 = 2;
 			}
-			if(flag==2)                               //flag等于2，则判断i
+		}
+		if (flag_3 == 2)                            //flag等于2，则判断i
+		{
+			closeRound(0, 2200, 1700, 1, 3500, 0);  //大圈
+			if (GetPosX() > -1600 && GetPosX() < -1500 && GetPosY() > 2800 && GetPosY() < 4800)
 			{
-				static u8 i=0;
-				if(i==0)                                //i为0，则走大圆
-				{
-				closeRound(0,2200,1700,1,3500,0);				//大圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step2");
-				}
-				if(i==1)                                //i为1，寻找x=0的直线
-				{
-//					LCD_ShowString(60,250,200,16,16,"Number1 step2_1");
-					straightLine(1,0,0,1,1500);
-					if((GetPosY()>2700&&GetPosY()<2800)&&(GetPosX()>-100&&GetPosX()<100))                                               /**********待调*******/
-					{
-						flag=3;           
-					}
-				}
-				  if(GetPosX()>-1500&&GetPosX()<-1400&&GetPosY()>2800&&GetPosY()<4800)                    /**********待调*******/
-				{
-					i=1;
-				}
+				flag_3 = 3;
 			}
-			if(flag==3)             //flag为3，开始后退靠边，
+		}
+		if (flag_3 == 3)                             //i为1，寻找x=0的直线
+		{
+			straightLine(1, 0, 0, 1, 1500);
+	 if ((GetPosY() > 2700 && GetPosY() < 2800) && (GetPosX() > -250 && GetPosX() < 250))
 			{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step3");
-				back_Turn(180,-2000);
+				flag_3 = 4;
 			}
+		}
+		if (flag_3 == 4)          //flag为3，开始后退靠边，
+		{
+			back_Turn(180, -2000);
+		}
 	}
 	/*靠在出发区的左边边上*/
-		if(SideNumber==4)            //靠在出发边的左边上；
+if(SideNumber==4)            //靠在出发边的左边上；
 	{
-		 if(flag==1)               //flag等于1，则行走小圆
+		flag_2=1;
+		flag_3=1;
+		flag_1=1;
+		if (flag_4 == 1)            //flag等于1，则行走小圆
+		{
+			closeRound(0, 2200, 800, 1, 4000, 1); //小圈
+			if (GetPosX() > 900 && GetPosX() < 1000 && GetPosY() > 0 && GetPosY() < 2000)
 			{
-				closeRound(0,2200, 800,1,4000,1);//小圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step1");
-			if(GetPosX()>900&&GetPosX()<1000&&GetPosY()>0&&GetPosY()<2000)
-				{
-					flag=2;
-				}
+				flag_4 = 2;
 			}
-			if(flag==2)                               //flag等于2，则判断i
+		}
+		if (flag_4 == 2)                            //flag等于2，则判断i
+		{
+			closeRound(0, 2200, 1700, 1, 3500, 0);  //大圈
+
+			if ((GetPosY() > 2100 && GetPosY() < 2200) && (GetPosX() > -400 && GetPosX() < -300))
 			{
-				static u8 i=0;
-				if(i==0)                                //i为0，则走大圆
-				{
-				closeRound(0,2200,1700,1,3500,0);				//大圈
-//				LCD_ShowString(60,250,200,16,16,"Number1 step2");
-				}
-				if(i==1)                                //i为1，寻找x=0的直线
-				{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step2_1");
-					straightLine(0,1,-2200,0,1500);
-					if((GetPosY()>2100&&GetPosY()<2200)&&(GetPosX()>-400&&GetPosX()<-300))                                               /**********待调*******/
-					{
-						flag=3;           
-					}
-				}
-				  if(GetPosX()>-2400&&GetPosX()<-400&&GetPosY()>900&&GetPosY()<1000)                    /**********待调*******/
-				{
-					i=1;
-				}
+				flag_4 = 3;
 			}
-			if(flag==3)             //flag为3，开始后退靠边，
+		}
+		if (flag_4 == 3)                             //i为1，寻找x=0的直线
+		{
+			straightLine(0, 1, -2200, 0, 1500);
+			if (GetPosX() > -2400 && GetPosX() < -400 && GetPosY() > 900 && GetPosY() < 1000)
 			{
-//				LCD_ShowString(60,250,200,16,16,"Number1 step3");
-				back_Turn(-90,-2000);
+				flag_4 = 4;
 			}
+		}
+		if (flag_4 == 4)          //flag为3，开始后退靠边，
+		{
+			back_Turn(-90, -2000);
+		}
 	}
 }
 

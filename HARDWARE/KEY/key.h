@@ -43,7 +43,9 @@ void MyusartInit5(u32);
 unsigned long strtou32(char *str);
 u16 Laser_Distance(void);
 float ConvertTo32(int la, int lb, int lc, int ld);
-u8 git_SideNumber1(void);
-u8 git_SideNumber2(void);
+u8 git_SideNumber1();
+u8 git_SideNumber2();
+u8 git_Begin_Run();
+float Laser_Left();
 void button_init(void);
 #endif
