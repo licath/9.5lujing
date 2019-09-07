@@ -600,9 +600,9 @@ void clock_wise_close_LargeToSmall(u8 SideNumber)
 		LCD_ShowString(55,190,200,16,16," ");
 		LCD_ShowxNum(60,190,flag_1,6,16,0X80);
 
-		LCD_ShowString(60,210,200,16,16,"flag_2=");
+		LCD_ShowString(60,210,200,16,16,"flag_4=");
 		LCD_ShowString(55,230,200,16,16," ");
-		LCD_ShowxNum(60,230,flag_2,6,16,0X80);
+		LCD_ShowxNum(60,230,flag_4,6,16,0X80);
 /*靠在出发去区的边上*/
 	if(SideNumber==1)            //靠在出发边上；
 {
@@ -729,20 +729,20 @@ if(SideNumber==4)            //靠在出发边的左边上；
 		{
 			closeRound(0, 2200, 1700, 1, 3500, 0);  //大圈
 
-			if ((GetPosY() > 2100 && GetPosY() < 2200) && (GetPosX() > -400 && GetPosX() < -300))
+			if ((GetPosY() > 0 && GetPosY() < 2000) && (GetPosX() > -700 && GetPosX() < -600))
 			{
 				flag_4 = 3;
 			}
 		}
-		if (flag_4 == 3)                             //i为1，寻找x=0的直线
+		if (flag_4 == 3)                            
 		{
 			straightLine(0, 1, -2200, 0, 1500);
-			if (GetPosX() > -2400 && GetPosX() < -400 && GetPosY() > 900 && GetPosY() < 1000)
+			if (GetPosX() > -600 && GetPosX() < -400 && GetPosY() > 2000 && GetPosY() < 2400)
 			{
 				flag_4 = 4;
 			}
 		}
-		if (flag_4 == 4)          //flag为3，开始后退靠边，
+		if (flag_4 == 4)         
 		{
 			back_Turn(-90, -2000);
 		}

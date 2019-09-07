@@ -19,7 +19,7 @@ static float laser_distance;
 fp32 Px,Py,laser_l;
 float Pp;
 fp32 v;
-long i1;
+long i,i1;
 int a;
 u8 SideNumber1,SideNumber2;       //保存车子计划靠的边数 
 u8 SideNumber;
@@ -51,7 +51,7 @@ int main(void)
 	  clear();
     while(1)
    {
-		    begin_run=git_Begin_Run();
+//		    begin_run=git_Begin_Run();
 		    laser_l=Laser_Left();
 		    SideNumber1=git_SideNumber1();
 		    SideNumber2=git_SideNumber2();
@@ -127,6 +127,7 @@ int main(void)
 					clock_wise_close_LargeToSmall(SideNumber);  
 					if((GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==0)&&(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5)==0))
 						{
+					  	i=millis();
 							if(millis()-i1>100)
 							{
 							flag_cir++;
@@ -154,7 +155,8 @@ int main(void)
 					 UART2_Send_Byte('d');
 					}
 					Back_Side(SideNumber);
-					if(begin_run==9)
+					if(millis()-i>3000)
+//					if(begin_run==9)
 						{
 							flag=0;
 							i1=millis();
